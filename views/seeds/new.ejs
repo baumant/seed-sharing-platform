@@ -1,0 +1,33 @@
+<!-- views/seeds/new.ejs -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>New Seed Listing - Seed Sharing Platform</title>
+  </head>
+  <body>
+    <h1>Create a New Seed Listing</h1>
+    <% if (typeof error !== 'undefined') { %>
+    <p style="color: red"><%= error %></p>
+    <% } %>
+    <form action="/seeds/new" method="POST" enctype="multipart/form-data">
+      <label>Title:</label><br />
+      <input type="text" name="title" required /><br />
+
+      <label>Description:</label><br />
+      <textarea name="description"></textarea><br />
+
+      <label>Quantity:</label><br />
+      <input type="text" name="quantity" /><br />
+
+      <label>Seed Type:</label><br />
+      <input type="text" name="seedType" /><br />
+
+      <label>Image:</label><br />
+      <input type="file" name="image" /><br />
+
+      <button type="submit">Create Listing</button>
+    </form>
+
+    <p><a href="/dashboard">Back to Dashboard</a></p>
+  </body>
+</html>

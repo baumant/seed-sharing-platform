@@ -1,0 +1,23 @@
+<!-- views/dashboard.ejs -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Dashboard - Seed Sharing Platform</title>
+  </head>
+  <body>
+    <h1>Welcome, <%= user.username %>!</h1>
+    <% if (user.profileImage) { %>
+    <img src="<%= user.profileImage %>" alt="Profile Image" width="100" /><br />
+    <% } %>
+    <p><a href="/logout">Logout</a></p>
+
+    <h2>Your Profile</h2>
+    <p>Email: <%= user.email %></p>
+    <p>Location: <%= user.location %></p>
+    <p>Bio: <%= user.bio %></p>
+
+    <!-- Add links to create and view seed listings -->
+    <p><a href="/seeds/new">Create a Seed Listing</a></p>
+    <p><a href="/seeds/mine">View Your Seed Listings</a></p>
+  </body>
+</html>

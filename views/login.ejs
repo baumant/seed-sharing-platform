@@ -1,0 +1,24 @@
+<!-- views/login.ejs -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Login - Seed Sharing Platform</title>
+  </head>
+  <body>
+    <h1>Login</h1>
+    <% if (typeof error !== 'undefined') { %>
+    <p style="color: red"><%= error %></p>
+    <% } %>
+    <form action="/login" method="POST">
+      <label>Email:</label><br />
+      <input type="email" name="email" required /><br />
+
+      <label>Password:</label><br />
+      <input type="password" name="password" required /><br />
+
+      <button type="submit">Login</button>
+    </form>
+
+    <p>Don't have an account? <a href="/register">Register here</a>.</p>
+  </body>
+</html>

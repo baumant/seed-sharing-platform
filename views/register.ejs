@@ -1,0 +1,36 @@
+<!-- views/register.ejs -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Register - Seed Sharing Platform</title>
+  </head>
+  <body>
+    <h1>Register</h1>
+    <% if (typeof error !== 'undefined') { %>
+    <p style="color: red"><%= error %></p>
+    <% } %>
+    <form action="/register" method="POST" enctype="multipart/form-data">
+      <label>Username:</label><br />
+      <input type="text" name="username" required /><br />
+
+      <label>Email:</label><br />
+      <input type="email" name="email" required /><br />
+
+      <label>Password:</label><br />
+      <input type="password" name="password" required /><br />
+
+      <label>Location:</label><br />
+      <input type="text" name="location" /><br />
+
+      <label>Bio:</label><br />
+      <textarea name="bio"></textarea><br />
+
+      <label>Profile Image:</label><br />
+      <input type="file" name="profileImage" /><br />
+
+      <button type="submit">Register</button>
+    </form>
+
+    <p>Already have an account? <a href="/login">Login here</a>.</p>
+  </body>
+</html>

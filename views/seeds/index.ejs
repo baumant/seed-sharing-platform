@@ -1,0 +1,48 @@
+<!-- views/seeds/index.ejs -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Seed Listings - Seed Sharing Platform</title>
+  </head>
+  <body>
+    <h1>Available Seed Listings</h1>
+
+    <!-- Search Form -->
+    <form action="/seeds/search" method="GET">
+      <input
+        type="text"
+        name="q"
+        placeholder="Search seeds..."
+        value="<%= query || '' %>"
+      />
+      <button type="submit">Search</button>
+    </form>
+
+    <% if (seeds.length === 0) { %>
+    <p>No seed listings found.</p>
+    <% } else { %>
+    <ul>
+      <% seeds.forEach(function(seed) { %>
+      <li>
+        <h3><%= seed.title %></h3>
+        <% if (seed.image) { %>
+        <img src="<%= seed.image %>" alt="Seed Image" width="100" /><br />
+        <% } %>
+        <p><%= seed.description %></p>
+        <p>Quantity: <%= seed.quantity %></p>
+        <p>Type: <%= seed.seedType %></p>
+        <p>Owner: <%= seed.owner.username %> (<%= seed.owner.location %>)</p>
+        <p>
+          Contact:
+          <a href="mailto:<%= seed.owner.email %>"><%= seed.owner.email %></a>
+        </p>
+      </li>
+      <% }); %>
+    </ul>
+    <% } %> <% if (isAuthenticated) { %>
+    <p><a href="/dashboard">Back to Dashboard</a></p>
+    <% } else { %>
+    <p><a href="/">Home</a></p>
+    <% } %>
+  </body>
+</html>

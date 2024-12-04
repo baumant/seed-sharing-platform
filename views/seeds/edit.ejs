@@ -1,0 +1,45 @@
+<!-- views/seeds/edit.ejs -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Edit Seed Listing - Seed Sharing Platform</title>
+  </head>
+  <body>
+    <h1>Edit Seed Listing</h1>
+    <% if (typeof error !== 'undefined') { %>
+    <p style="color: red"><%= error %></p>
+    <% } %>
+    <form
+      action="/seeds/edit/<%= seed._id %>"
+      method="POST"
+      enctype="multipart/form-data"
+    >
+      <label>Title:</label><br />
+      <input
+        type="text"
+        name="title"
+        value="<%= seed.title %>"
+        required
+      /><br />
+
+      <label>Description:</label><br />
+      <textarea name="description"><%= seed.description %></textarea><br />
+
+      <label>Quantity:</label><br />
+      <input type="text" name="quantity" value="<%= seed.quantity %>" /><br />
+
+      <label>Seed Type:</label><br />
+      <input type="text" name="seedType" value="<%= seed.seedType %>" /><br />
+
+      <label>Image:</label><br />
+      <% if (seed.image) { %>
+      <img src="<%= seed.image %>" alt="Seed Image" width="100" /><br />
+      <% } %>
+      <input type="file" name="image" /><br />
+
+      <button type="submit">Update Listing</button>
+    </form>
+
+    <p><a href="/seeds/mine">Back to Your Listings</a></p>
+  </body>
+</html>
