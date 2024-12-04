@@ -2,6 +2,7 @@
 const Seed = require("../models/Seed");
 const multer = require("multer");
 const path = require("path");
+const { body, validationResult } = require("express-validator");
 
 // Configure Multer for file uploads
 const storage = multer.diskStorage({
@@ -13,7 +14,21 @@ const storage = multer.diskStorage({
   },
 });
 
-const upload = multer({ storage: storage });
+const fileFilter = (req, file, cb) => {
+  // Accept images only
+  if (!file.mimetype.startsWith("image/")) {
+    req.fileValidationError = "Only image files are allowed!";
+    cb(new Error("Only image files are allowed!"), false);
+  } else {
+    cb(null, true);
+  }
+};
+
+const upload = multer({
+  storage: storage,
+  fileFilter: fileFilter,
+  limits: { fileSize: 1024 * 1024 * 5 }, // Limit files to 5MB
+});
 
 // Render form to create a new seed listing
 exports.newSeedForm = (req, res) => {
@@ -23,6 +38,10 @@ exports.newSeedForm = (req, res) => {
 // Handle creation of a new seed listing
 exports.createSeed = [
   upload.single("image"),
+
+  body("title").trim().escape(),
+  body("description").trim().escape(),
+
   async (req, res) => {
     const { title, description, quantity, seedType } = req.body;
     const image = req.file ? "/uploads/seeds/" + req.file.filename : null;
@@ -54,23 +73,47 @@ exports.mySeeds = async (req, res) => {
 
 // Display all seed listings
 exports.allSeeds = async (req, res) => {
-  const seeds = await Seed.find().populate("owner", "username location");
-  const query = ""; // Ensure query is defined
-  res.render("seeds/index", { seeds, query });
+  try {
+    const seeds = await Seed.find().populate("owner", "username location");
+    const query = ""; // Ensure query is defined
+    res.render("seeds/index", { seeds, query });
+  } catch (error) {
+    console.error("Error fetching seeds:", error);
+    res.status(500).render("error", {
+      message: "An error occurred while fetching seeds.",
+      error,
+      env: process.env.NODE_ENV || "development",
+    });
+  }
 };
 
 // Render form to edit a seed listing
 exports.editSeedForm = async (req, res) => {
-  const seed = await Seed.findById(req.params.id);
-  if (!seed || seed.owner.toString() !== req.session.userId) {
-    return res.redirect("/seeds/mine");
+  try {
+    const seed = await Seed.findById(req.params.id);
+    if (!seed || seed.owner.toString() !== req.session.userId) {
+      return res.redirect("/seeds/mine");
+    }
+
+    res.render("seeds/edit", {
+      seed,
+    });
+  } catch (error) {
+    console.error("Error rendering edit form:", error);
+    res.status(500).render("error", {
+      message: "An error occurred while loading the edit form.",
+      error,
+      env: process.env.NODE_ENV || "development",
+    });
   }
-  res.render("seeds/edit", { seed });
 };
 
 // Handle updating a seed listing
 exports.updateSeed = [
   upload.single("image"),
+
+  body("title").trim().escape(),
+
   async (req, res) => {
     const { title, description, quantity, seedType } = req.body;
     const image = req.file ? "/uploads/seeds/" + req.file.filename : null;
@@ -91,7 +134,10 @@ exports.updateSeed = [
       res.redirect("/seeds/mine");
     } catch (error) {
       console.error(error);
-      res.render("seeds/edit", { error: "Error updating seed listing.", seed });
+      res.render("seeds/edit", {
+        error: "Error updating seed listing.",
+        seed,
+      });
     }
   },
 ];

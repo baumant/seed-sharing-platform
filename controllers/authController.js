@@ -3,6 +3,7 @@ const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const multer = require("multer");
 const path = require("path");
+const { body, validationResult } = require("express-validator");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -13,18 +14,64 @@ const storage = multer.diskStorage({
   },
 });
 
-const upload = multer({ storage: storage });
+const fileFilter = (req, file, cb) => {
+  if (!file.mimetype.startsWith("image/")) {
+    req.fileValidationError = "Only image files are allowed!";
+    cb(null, false);
+  } else {
+    cb(null, true);
+  }
+};
+
+const upload = multer({
+  storage: storage,
+  fileFilter: fileFilter,
+  limits: { fileSize: 1024 * 1024 * 5 }, // Limit files to 5MB
+});
 
 // Render registration form
 exports.registerForm = (req, res) => {
-  res.render("register");
+  res.render("register", { errors: [] });
 };
 
 // Handle user registration
 exports.registerUser = [
+  // File upload middleware
   upload.single("profileImage"),
+
+  // Validation middleware
+  body("username")
+    .trim()
+    .notEmpty()
+    .withMessage("Username is required.")
+    .isLength({ min: 3 })
+    .withMessage("Username must be at least 3 characters long."),
+  body("email")
+    .trim()
+    .notEmpty()
+    .withMessage("Email is required.")
+    .isEmail()
+    .withMessage("Invalid email address."),
+  body("password")
+    .notEmpty()
+    .withMessage("Password is required.")
+    .isLength({ min: 6 })
+    .withMessage("Password must be at least 6 characters long."),
+  body("location").trim().escape(),
+  body("bio").trim().escape(),
+  body("email").normalizeEmail(),
+
   async (req, res) => {
-    console.log("RegisterUser function started");
+    // Check for upload errors
+    if (req.fileValidationError) {
+      return res.render("register", { error: req.fileValidationError });
+    }
+
+    // Handle validation errors
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.render("register", { errors: errors.array() });
+    }
 
     const { username, email, password, location, bio } = req.body;
     console.log("Form data:", req.body);
@@ -41,7 +88,9 @@ exports.registerUser = [
 
     if (existingUser) {
       console.log("User already exists");
-      return res.render("register", { error: "Email already in use." });
+      return res.render("register", {
+        errors: [{ msg: "Email already in use" }],
+      });
     }
 
     // Hash password
@@ -76,29 +125,64 @@ exports.registerUser = [
 
 // Render login form
 exports.loginForm = (req, res) => {
-  res.render("login");
+  res.render("login", {
+    errors: [],
+  });
 };
 
 // Handle user login
-exports.loginUser = async (req, res) => {
-  const { email, password } = req.body;
+exports.loginUser = [
+  // Validation middleware...
+  body("email")
+    .trim()
+    .notEmpty()
+    .withMessage("Email is required.")
+    .isEmail()
+    .withMessage("Invalid email address."),
+  body("password").notEmpty().withMessage("Password is required."),
+  body("email").normalizeEmail(),
 
-  // Find user by email
-  const user = await User.findOne({ email });
-  if (!user) {
-    return res.render("login", { error: "Invalid email or password." });
-  }
+  async (req, res) => {
+    // Handle validation errors
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.render("login", { errors: errors.array() });
+    }
 
-  // Compare passwords
-  const isMatch = await bcrypt.compare(password, user.password);
-  if (!isMatch) {
-    return res.render("login", { error: "Invalid email or password." });
-  }
+    const { email, password } = req.body;
 
-  // Successful login
-  req.session.userId = user._id;
-  res.redirect("/dashboard");
-};
+    // Find user by email
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.render("login", {
+        errors: [{ msg: "Invalid email or password." }],
+      });
+    }
+
+    // Compare passwords
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.render("login", {
+        errors: [{ msg: "Invalid email or password." }],
+      });
+    }
+
+    // Successful login
+    req.session.regenerate((err) => {
+      if (err) {
+        console.error("Session regeneration error:", err);
+        return res.render("login", {
+          errors: [
+            { msg: "An error occurred during login. Please try again." },
+          ],
+        });
+      }
+
+      req.session.userId = user._id;
+      res.redirect("/dashboard");
+    });
+  },
+];
 
 // Handle user logout
 exports.logoutUser = (req, res) => {

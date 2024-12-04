@@ -1,0 +1,17 @@
+<!-- views/error.ejs -->
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Error - Seed Sharing Platform</title>
+  </head>
+  <body>
+    <h1>Error</h1>
+    <p><%= message %></p>
+
+    <% if (error && Object.keys(error).length > 0 && env !== 'production') { %>
+    <pre><%= error.stack %></pre>
+    <% } %>
+
+    <p><a href="/">Return to Home</a></p>
+  </body>
+</html>
