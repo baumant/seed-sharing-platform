@@ -57,8 +57,6 @@ app.use(
 );
 
 app.use((req, res, next) => {
-  console.log("Session:", req.session);
-  console.log("User ID:", req.session.userId);
   res.locals.isAuthenticated = !!req.session.userId;
   next();
 });

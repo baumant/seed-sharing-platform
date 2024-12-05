@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Your Seed Listings - Seed Sharing Platform</title>
+    <title>Your Seed Listings - Seed Swap</title>
   </head>
   <body>
     <h1>Your Seed Listings</h1>
@@ -12,13 +12,12 @@
     <ul>
       <% seeds.forEach(function(seed) { %>
       <li>
-        <h3><%= seed.title %></h3>
+        <h3><%= seed.varietyName %></h3>
         <% if (seed.image) { %>
         <img src="<%= seed.image %>" alt="Seed Image" width="100" /><br />
         <% } %>
-        <p><%= seed.description %></p>
-        <p>Quantity: <%= seed.quantity %></p>
-        <p>Type: <%= seed.seedType %></p>
+        <p><%= seed.plantType %></p>
+        <p><%= seed.varietyDescription %></p>
         <a href="/seeds/edit/<%= seed._id %>">Edit</a> |
         <form
           action="/seeds/delete/<%= seed._id %>"

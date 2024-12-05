@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Edit Profile - Seed Swap</title>
+  </head>
+  <body>
+    <h1>Edit Profile</h1>
+
+    <% if (typeof error !== 'undefined' && error) { %>
+    <p style="color: red"><%= error %></p>
+    <% } %> <% if (typeof errors !== 'undefined' && errors.length > 0) { %>
+    <ul style="color: red">
+      <% errors.forEach(function(error) { %>
+      <li><%= error.msg %></li>
+      <% }); %>
+    </ul>
+    <% } %>
+
+    <form action="/profile/edit" method="POST" enctype="multipart/form-data">
+      <label>Username:</label><br />
+      <input
+        type="text"
+        name="username"
+        value="<%= user.username %>"
+        required
+      /><br />
+
+      <label>Email:</label><br />
+      <input
+        type="email"
+        name="email"
+        value="<%= user.email %>"
+        required
+      /><br />
+
+      <label>Location:</label><br />
+      <input
+        type="text"
+        name="location"
+        value="<%= user.location || '' %>"
+      /><br />
+
+      <label>Bio:</label><br />
+      <textarea name="bio"><%= user.bio || '' %></textarea><br />
+
+      <label>Profile Image:</label><br />
+      <% if (user.profileImage) { %>
+      <img
+        src="<%= user.profileImage %>"
+        alt="Current Profile Image"
+        width="100"
+      /><br />
+      <% } %>
+      <input type="file" name="profileImage" /><br />
+
+      <button type="submit">Update Profile</button>
+    </form>
+
+    <p><a href="/dashboard">Back to Dashboard</a></p>
+  </body>
+</html>

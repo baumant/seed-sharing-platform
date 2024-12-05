@@ -39,18 +39,26 @@ exports.newSeedForm = (req, res) => {
 exports.createSeed = [
   upload.single("image"),
 
-  body("title").trim().escape(),
-  body("description").trim().escape(),
+  body("plantType")
+    .trim()
+    .escape()
+    .notEmpty()
+    .withMessage("Plant type is required"),
+  body("varietyName")
+    .trim()
+    .escape()
+    .notEmpty()
+    .withMessage("Variety name is required"),
+  body("varietyDescription").trim().escape(),
 
   async (req, res) => {
-    const { title, description, quantity, seedType } = req.body;
+    const { plantType, varietyName, varietyDescription } = req.body;
     const image = req.file ? "/uploads/seeds/" + req.file.filename : null;
 
     const seed = new Seed({
-      title,
-      description,
-      quantity,
-      seedType,
+      plantType,
+      varietyName,
+      varietyDescription,
       image,
       owner: req.session.userId,
     });
@@ -74,7 +82,10 @@ exports.mySeeds = async (req, res) => {
 // Display all seed listings
 exports.allSeeds = async (req, res) => {
   try {
-    const seeds = await Seed.find().populate("owner", "username location");
+    const seeds = await Seed.find().populate(
+      "owner",
+      "username location email"
+    );
     const query = ""; // Ensure query is defined
     res.render("seeds/index", { seeds, query });
   } catch (error) {
@@ -112,10 +123,12 @@ exports.editSeedForm = async (req, res) => {
 exports.updateSeed = [
   upload.single("image"),
 
-  body("title").trim().escape(),
+  body("plantType").trim().escape().notEmpty(),
+  body("varietyName").trim().escape().notEmpty(),
+  body("varietyDescription").trim().escape(),
 
   async (req, res) => {
-    const { title, description, quantity, seedType } = req.body;
+    const { plantType, varietyName, varietyDescription } = req.body;
     const image = req.file ? "/uploads/seeds/" + req.file.filename : null;
 
     try {
@@ -124,10 +137,9 @@ exports.updateSeed = [
         return res.redirect("/seeds/mine");
       }
 
-      seed.title = title;
-      seed.description = description;
-      seed.quantity = quantity;
-      seed.seedType = seedType;
+      seed.plantType = plantType;
+      seed.varietyName = varietyName;
+      seed.varietyDescription = varietyDescription;
       if (image) seed.image = image;
 
       await seed.save();
@@ -136,7 +148,7 @@ exports.updateSeed = [
       console.error(error);
       res.render("seeds/edit", {
         error: "Error updating seed listing.",
-        seed,
+        seed: req.body,
       });
     }
   },
@@ -171,9 +183,9 @@ exports.searchSeeds = async (req, res) => {
   const query = req.query.q || "";
   const seeds = await Seed.find({
     $or: [
-      { title: new RegExp(query, "i") },
-      { seedType: new RegExp(query, "i") },
+      { plantType: new RegExp(query, "i") },
+      { varietyName: new RegExp(query, "i") },
     ],
-  }).populate("owner", "username location");
+  }).populate("owner", "username location email");
   res.render("seeds/index", { seeds, query });
 };

@@ -2,11 +2,55 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Seed Sharing Platform</title>
+    <title>Seed Swap</title>
     <link rel="stylesheet" href="/css/style.css" />
   </head>
   <body>
-    <h1>Welcome to the Seed Sharing Platform</h1>
-    <p>This is the MVP of our platform.</p>
+    <h1>Welcome to the Seed Swap</h1>
+
+    <nav>
+      <% if (isAuthenticated) { %>
+      <div class="nav-section">
+        <h2>Your Account</h2>
+        <ul>
+          <li><a href="/dashboard">Dashboard</a></li>
+          <li><a href="/profile/edit">Edit Profile</a></li>
+          <li><a href="/logout">Logout</a></li>
+        </ul>
+      </div>
+
+      <div class="nav-section">
+        <h2>Seed Management</h2>
+        <ul>
+          <li><a href="/seeds/new">Add New Seeds</a></li>
+          <li><a href="/seeds/mine">My Seed Listings</a></li>
+        </ul>
+      </div>
+      <% } else { %>
+      <div class="nav-section">
+        <h2>Join Our Community</h2>
+        <ul>
+          <li><a href="/register">Register</a></li>
+          <li><a href="/login">Login</a></li>
+        </ul>
+      </div>
+      <% } %>
+
+      <div class="nav-section">
+        <h2>Browse Seeds</h2>
+        <ul>
+          <li><a href="/seeds">All Seed Listings</a></li>
+          <li><a href="/seeds/search">Search Seeds</a></li>
+        </ul>
+      </div>
+    </nav>
+
+    <div class="description">
+      <h2>About Our Platform</h2>
+      <p>
+        Share and discover heirloom seeds with fellow gardeners. Build
+        connections and preserve biodiversity in our community.
+      </p>
+    </div>
   </body>
 </html>

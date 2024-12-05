@@ -74,20 +74,15 @@ exports.registerUser = [
     }
 
     const { username, email, password, location, bio } = req.body;
-    console.log("Form data:", req.body);
 
     const profileImage = req.file
       ? "/uploads/profiles/" + req.file.filename
       : null;
-    console.log("Profile Image:", profileImage);
 
     // Check if user already exists
-    console.log("Checking if user exists");
     const existingUser = await User.findOne({ email });
-    console.log("Existing user:", existingUser);
 
     if (existingUser) {
-      console.log("User already exists");
       return res.render("register", {
         errors: [{ msg: "Email already in use" }],
       });
@@ -179,3 +174,60 @@ exports.logoutUser = (req, res) => {
     res.redirect("/");
   });
 };
+
+exports.editProfileForm = async (req, res) => {
+  try {
+    const user = await User.findById(req.session.userId);
+    res.render("profile/edit", { user, error: null });
+  } catch (error) {
+    console.error("Error loading profile:", error);
+    res.status(500).render("error", {
+      message: "Error loading profile",
+      error,
+      env: process.env.NODE_ENV || "development",
+    });
+  }
+};
+
+exports.updateProfile = [
+  upload.single("profileImage"),
+
+  // Validation
+  body("username").trim().notEmpty().withMessage("Username is required"),
+  body("email").trim().isEmail().withMessage("Valid email is required"),
+  body("location").trim().escape(),
+  body("bio").trim().escape(),
+
+  async (req, res) => {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.render("profile/edit", {
+          user: req.body,
+          errors: errors.array(),
+        });
+      }
+
+      const { username, email, location, bio } = req.body;
+      const updateData = { username, email, location, bio };
+
+      if (req.file) {
+        updateData.profileImage = "/uploads/profiles/" + req.file.filename;
+      }
+
+      const user = await User.findByIdAndUpdate(
+        req.session.userId,
+        updateData,
+        { new: true }
+      );
+
+      res.redirect("/dashboard");
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      res.render("profile/edit", {
+        user: req.body,
+        error: "Error updating profile",
+      });
+    }
+  },
+];

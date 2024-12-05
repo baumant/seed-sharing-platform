@@ -2,7 +2,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Edit Seed Listing - Seed Sharing Platform</title>
+    <title>Edit Seed Listing - Seed Swap</title>
   </head>
   <body>
     <h1>Edit Seed Listing</h1>
@@ -14,22 +14,26 @@
       method="POST"
       enctype="multipart/form-data"
     >
-      <label>Title:</label><br />
+      <label>Plant Type:</label><br />
       <input
         type="text"
-        name="title"
-        value="<%= seed.title %>"
+        name="plantType"
+        value="<%= seed.plantType %>"
         required
       /><br />
 
-      <label>Description:</label><br />
-      <textarea name="description"><%= seed.description %></textarea><br />
+      <label>Variety Name:</label><br />
+      <input
+        type="text"
+        name="varietyName"
+        value="<%= seed.varietyName %>"
+        required
+      /><br />
 
-      <label>Quantity:</label><br />
-      <input type="text" name="quantity" value="<%= seed.quantity %>" /><br />
-
-      <label>Seed Type:</label><br />
-      <input type="text" name="seedType" value="<%= seed.seedType %>" /><br />
+      <label>Variety Description:</label><br />
+      <textarea name="varietyDescription">
+<%= seed.varietyDescription %></textarea
+      ><br />
 
       <label>Image:</label><br />
       <% if (seed.image) { %>
