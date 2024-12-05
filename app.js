@@ -39,10 +39,12 @@ app.use(cookieParser());
 app.use(
   session({
     secret: process.env.SESSION_SECRET || "your_session_secret",
-    resave: false,
+    resave: true,
     saveUninitialized: false,
     store: MongoStore.create({
       mongoUrl: process.env.MONGODB_URI,
+      ttl: 24 * 60 * 60,
+      touchAfter: 24 * 3600, // Only update session once per day
     }),
     cookie: {
       maxAge: 1000 * 60 * 60 * 24, // 1 day
@@ -50,10 +52,13 @@ app.use(
       secure: process.env.NODE_ENV === "production", // Ensures cookies are sent over HTTPS in production
       sameSite: "lax", // Controls cookie sending for CSRF protection
     },
+    proxy: process.env.NODE_ENV === "production",
   })
 );
 
 app.use((req, res, next) => {
+  console.log("Session:", req.session);
+  console.log("User ID:", req.session.userId);
   res.locals.isAuthenticated = !!req.session.userId;
   next();
 });

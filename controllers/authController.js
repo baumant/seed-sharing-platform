@@ -149,38 +149,27 @@ exports.loginUser = [
       return res.render("login", { errors: errors.array() });
     }
 
-    const { email, password } = req.body;
+    try {
+      const { email, password } = req.body;
+      const user = await User.findOne({ email });
 
-    // Find user by email
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res.render("login", {
-        errors: [{ msg: "Invalid email or password." }],
-      });
-    }
-
-    // Compare passwords
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.render("login", {
-        errors: [{ msg: "Invalid email or password." }],
-      });
-    }
-
-    // Successful login
-    req.session.regenerate((err) => {
-      if (err) {
-        console.error("Session regeneration error:", err);
+      if (!user || !(await bcrypt.compare(password, user.password))) {
         return res.render("login", {
-          errors: [
-            { msg: "An error occurred during login. Please try again." },
-          ],
+          errors: [{ msg: "Invalid email or password" }],
         });
       }
 
+      // Set session and wait for it to save
       req.session.userId = user._id;
+      await new Promise((resolve) => req.session.save(resolve));
+
       res.redirect("/dashboard");
-    });
+    } catch (error) {
+      console.error("Login error:", error);
+      res.render("login", {
+        errors: [{ msg: "An error occurred during login" }],
+      });
+    }
   },
 ];
 
