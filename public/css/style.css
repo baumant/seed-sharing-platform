@@ -71,6 +71,9 @@ h1 {
 .listing-list .listing:nth-child(odd) {
   background-color: #f8f9fa;
 }
+.listing-list .listing .listing-details {
+  flex-basis: 100%;
+}
 @media (min-width: 768px) {
   .listing-list .listing {
     flex-wrap: nowrap;
