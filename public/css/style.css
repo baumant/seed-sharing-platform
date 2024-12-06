@@ -56,3 +56,30 @@ h1 {
     gap: 0.5rem;
   }
 }
+
+.listing-list {
+  padding: 0;
+}
+.listing-list .listing {
+  display: flex;
+  align-items: flex-start;
+  border-top: 1px solid;
+  padding: 10px;
+  margin: 0;
+  flex-wrap: wrap;
+}
+.listing-list .listing:nth-child(odd) {
+  background-color: #f8f9fa;
+}
+@media (min-width: 768px) {
+  .listing-list .listing {
+    flex-wrap: nowrap;
+  }
+  .listing-list .listing .listing-details {
+    flex: 1;
+    padding: 0 0 0 10px;
+  }
+  .listing-list .listing .listing-details h3 {
+    margin-top: 0;
+  }
+}

@@ -12,19 +12,21 @@
     <% if (seeds.length === 0) { %>
     <p>You have no seed listings.</p>
     <% } else { %>
-    <ul>
+    <ul class="listing-list">
       <% seeds.forEach(function(seed) { %>
-      <li>
-        <h3><%= seed.varietyName %> - <%= seed.plantType %></h3>
+      <li class="listing">
         <% if (seed.image) { %>
         <img
           src="<%= getOptimizedImageUrl(seed.image, { width: 200 }) %>"
           alt="<%= seed.varietyName %>"
           width="100"
           loading="lazy"
-        /><br />
+        />
         <% } %>
-        <p><%= seed.varietyDescription %></p>
+        <div class="listing-details">
+          <h3><%= seed.varietyName %> - <%= seed.plantType %></h3>
+          <p><%= seed.varietyDescription %></p>
+        </div>
         <a href="/seeds/edit/<%= seed._id %>">Edit</a> |
         <form
           action="/seeds/delete/<%= seed._id %>"

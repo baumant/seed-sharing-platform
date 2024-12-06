@@ -25,24 +25,26 @@
     <% if (seeds.length === 0) { %>
     <p>No seed listings found.</p>
     <% } else { %>
-    <ul>
+    <ul class="listing-list">
       <% seeds.forEach(function(seed) { %>
-      <li>
-        <h3><%= seed.varietyName %> - <%= seed.plantType %></h3>
+      <li class="listing">
         <% if (seed.image) { %>
         <img
           src="<%= getOptimizedImageUrl(seed.image, { width: 400 }) %>"
           alt="<%= seed.varietyName %>"
           width="200"
           loading="lazy"
-        /><br />
+        />
         <% } %>
-        <p><%= seed.varietyDescription %></p>
-        <p>Owner: <%= seed.owner.username %> (<%= seed.owner.location %>)</p>
-        <p>
-          Contact:
-          <a href="mailto:<%= seed.owner.email %>"><%= seed.owner.email %></a>
-        </p>
+        <div class="listing-details">
+          <h3><%= seed.varietyName %> - <%= seed.plantType %></h3>
+          <p><%= seed.varietyDescription %></p>
+          <p>Owner: <%= seed.owner.username %> (<%= seed.owner.location %>)</p>
+          <p>
+            Contact:
+            <a href="mailto:<%= seed.owner.email %>"><%= seed.owner.email %></a>
+          </p>
+        </div>
       </li>
       <% }); %>
     </ul>
