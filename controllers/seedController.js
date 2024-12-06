@@ -39,17 +39,9 @@ exports.newSeedForm = (req, res) => {
 exports.createSeed = [
   upload.single("image"),
 
-  body("plantType")
-    .trim()
-    .escape()
-    .notEmpty()
-    .withMessage("Plant type is required"),
-  body("varietyName")
-    .trim()
-    .escape()
-    .notEmpty()
-    .withMessage("Variety name is required"),
-  body("varietyDescription").trim().escape(),
+  body("plantType").trim().notEmpty().withMessage("Plant type is required"),
+  body("varietyName").trim().notEmpty().withMessage("Variety name is required"),
+  body("varietyDescription").trim(),
 
   async (req, res) => {
     const { plantType, varietyName, varietyDescription } = req.body;
@@ -123,9 +115,9 @@ exports.editSeedForm = async (req, res) => {
 exports.updateSeed = [
   upload.single("image"),
 
-  body("plantType").trim().escape().notEmpty(),
-  body("varietyName").trim().escape().notEmpty(),
-  body("varietyDescription").trim().escape(),
+  body("plantType").trim().notEmpty(),
+  body("varietyName").trim().notEmpty(),
+  body("varietyDescription").trim(),
 
   async (req, res) => {
     const { plantType, varietyName, varietyDescription } = req.body;
