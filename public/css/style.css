@@ -10,3 +10,49 @@ body {
 h1 {
   color: #2c3e50;
 }
+
+/* public/css/style.css */
+.main-header {
+  background-color: #f8f9fa;
+  padding: 0.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.main-header nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.nav-brand a {
+  font-weight: bold;
+}
+
+.nav-links {
+  display: flex;
+  gap: 1rem;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: #4a5568;
+  padding: 0.5rem;
+}
+
+.nav-links a:hover {
+  color: #2c5282;
+}
+
+@media (max-width: 768px) {
+  .main-header nav {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .nav-links {
+    justify-content: center;
+    gap: 0.5rem;
+  }
+}

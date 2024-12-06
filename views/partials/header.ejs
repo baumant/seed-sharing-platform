@@ -1,0 +1,17 @@
+<!-- views/partials/header.ejs -->
+<header class="main-header">
+  <nav>
+    <div class="nav-brand">
+      <a href="/">Home</a>
+    </div>
+    <div class="nav-links">
+      <a href="/seeds">Browse Seeds</a>
+      <% if (isAuthenticated) { %>
+      <a href="/seeds/new">Add Seeds</a>
+      <a href="/dashboard">Dashboard</a>
+      <% } else { %>
+      <a href="/login">Login</a>
+      <% } %>
+    </div>
+  </nav>
+</header>

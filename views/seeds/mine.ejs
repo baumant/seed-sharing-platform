@@ -7,9 +7,8 @@
     <link rel="stylesheet" href="/css/style.css" />
   </head>
   <body>
+    <%- include('../partials/header') %>
     <h1>Your Seed Listings</h1>
-    <p><a href="/seeds/new">Add a Seed Listing</a></p>
-    <p><a href="/dashboard">Back to Dashboard</a></p>
     <% if (seeds.length === 0) { %>
     <p>You have no seed listings.</p>
     <% } else { %>

@@ -3,8 +3,11 @@
 <html>
   <head>
     <title>Edit Seed Listing - Seed Swap</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/css/style.css" />
   </head>
   <body>
+    <%- include('../partials/header') %>
     <h1>Edit Seed Listing</h1>
     <% if (typeof error !== 'undefined' && error) { %>
     <p style="color: red"><%= error %></p>
