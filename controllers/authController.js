@@ -4,13 +4,15 @@ const bcrypt = require("bcryptjs");
 const multer = require("multer");
 const path = require("path");
 const { body, validationResult } = require("express-validator");
+const cloudinary = require("cloudinary").v2;
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
+const { getOptimizedImageUrl } = require("../utils/imageHelper");
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "public/uploads/profiles/");
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + path.extname(file.originalname)); // Append the file extension
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: "profiles", // Separate folder for profile images
+    allowed_formats: ["jpg", "png", "jpeg"],
   },
 });
 
@@ -75,9 +77,7 @@ exports.registerUser = [
 
     const { username, email, password, location, bio } = req.body;
 
-    const profileImage = req.file
-      ? "/uploads/profiles/" + req.file.filename
-      : null;
+    const profileImage = req.file ? req.file.path : null;
 
     // Check if user already exists
     const existingUser = await User.findOne({ email });
@@ -178,7 +178,7 @@ exports.logoutUser = (req, res) => {
 exports.editProfileForm = async (req, res) => {
   try {
     const user = await User.findById(req.session.userId);
-    res.render("profile/edit", { user, error: null });
+    res.render("profile/edit", { user, error: null, getOptimizedImageUrl });
   } catch (error) {
     console.error("Error loading profile:", error);
     res.status(500).render("error", {
@@ -205,15 +205,14 @@ exports.updateProfile = [
         return res.render("profile/edit", {
           user: req.body,
           errors: errors.array(),
+          getOptimizedImageUrl,
         });
       }
 
-      const { username, email, location, bio } = req.body;
-      const updateData = { username, email, location, bio };
-
-      if (req.file) {
-        updateData.profileImage = "/uploads/profiles/" + req.file.filename;
-      }
+      const updateData = {
+        ...req.body,
+        profileImage: req.file ? req.file.path : undefined,
+      };
 
       const user = await User.findByIdAndUpdate(
         req.session.userId,
@@ -227,6 +226,7 @@ exports.updateProfile = [
       res.render("profile/edit", {
         user: req.body,
         error: "Error updating profile",
+        getOptimizedImageUrl,
       });
     }
   },

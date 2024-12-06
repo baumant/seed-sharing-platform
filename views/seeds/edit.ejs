@@ -40,7 +40,12 @@
 
       <label>Image:</label><br />
       <% if (seed.image) { %>
-      <img src="<%= seed.image %>" alt="Seed Image" width="100" /><br />
+      <img
+        src="<%= getOptimizedImageUrl(seed.image, { width: 200 }) %>"
+        alt="<%= seed.varietyName %>"
+        width="100"
+        loading="lazy"
+      /><br />
       <% } %>
       <input type="file" name="image" /><br />
 

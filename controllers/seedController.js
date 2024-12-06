@@ -3,16 +3,33 @@ const Seed = require("../models/Seed");
 const multer = require("multer");
 const path = require("path");
 const { body, validationResult } = require("express-validator");
+const cloudinary = require("cloudinary").v2;
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
+const { getOptimizedImageUrl } = require("../utils/imageHelper");
 
-// Configure Multer for file uploads
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "public/uploads/seeds/");
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + path.extname(file.originalname)); // Append the file extension
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    folder: "seeds",
+    allowed_formats: ["jpg", "png", "jpeg"],
   },
 });
+
+// Configure Multer for file uploads
+// const storage = multer.diskStorage({
+//   destination: function (req, file, cb) {
+//     cb(null, "public/uploads/seeds/");
+//   },
+//   filename: function (req, file, cb) {
+//     cb(null, Date.now() + path.extname(file.originalname)); // Append the file extension
+//   },
+// });
 
 const fileFilter = (req, file, cb) => {
   // Accept images only
@@ -45,7 +62,7 @@ exports.createSeed = [
 
   async (req, res) => {
     const { plantType, varietyName, varietyDescription } = req.body;
-    const image = req.file ? "/uploads/seeds/" + req.file.filename : null;
+    const image = req.file ? req.file.path : null;
 
     const seed = new Seed({
       plantType,
@@ -68,7 +85,7 @@ exports.createSeed = [
 // Display user's seed listings
 exports.mySeeds = async (req, res) => {
   const seeds = await Seed.find({ owner: req.session.userId });
-  res.render("seeds/mine", { seeds });
+  res.render("seeds/mine", { seeds, getOptimizedImageUrl });
 };
 
 // Display all seed listings
@@ -78,8 +95,11 @@ exports.allSeeds = async (req, res) => {
       "owner",
       "username location email"
     );
-    const query = ""; // Ensure query is defined
-    res.render("seeds/index", { seeds, query });
+    res.render("seeds/index", {
+      seeds,
+      query: "",
+      getOptimizedImageUrl,
+    });
   } catch (error) {
     console.error("Error fetching seeds:", error);
     res.status(500).render("error", {
@@ -100,6 +120,7 @@ exports.editSeedForm = async (req, res) => {
 
     res.render("seeds/edit", {
       seed,
+      getOptimizedImageUrl,
     });
   } catch (error) {
     console.error("Error rendering edit form:", error);
@@ -121,7 +142,7 @@ exports.updateSeed = [
 
   async (req, res) => {
     const { plantType, varietyName, varietyDescription } = req.body;
-    const image = req.file ? "/uploads/seeds/" + req.file.filename : null;
+    const image = req.file ? req.file.path : null;
 
     try {
       const seed = await Seed.findById(req.params.id);
@@ -141,6 +162,7 @@ exports.updateSeed = [
       res.render("seeds/edit", {
         error: "Error updating seed listing.",
         seed: req.body,
+        getOptimizedImageUrl,
       });
     }
   },
@@ -179,5 +201,5 @@ exports.searchSeeds = async (req, res) => {
       { varietyName: new RegExp(query, "i") },
     ],
   }).populate("owner", "username location email");
-  res.render("seeds/index", { seeds, query });
+  res.render("seeds/index", { seeds, query, getOptimizedImageUrl });
 };

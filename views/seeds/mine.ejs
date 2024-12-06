@@ -17,7 +17,12 @@
       <li>
         <h3><%= seed.varietyName %> - <%= seed.plantType %></h3>
         <% if (seed.image) { %>
-        <img src="<%= seed.image %>" alt="Seed Image" width="100" /><br />
+        <img
+          src="<%= getOptimizedImageUrl(seed.image, { width: 200 }) %>"
+          alt="<%= seed.varietyName %>"
+          width="100"
+          loading="lazy"
+        /><br />
         <% } %>
         <p><%= seed.varietyDescription %></p>
         <a href="/seeds/edit/<%= seed._id %>">Edit</a> |

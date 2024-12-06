@@ -30,7 +30,12 @@
       <li>
         <h3><%= seed.varietyName %> - <%= seed.plantType %></h3>
         <% if (seed.image) { %>
-        <img src="<%= seed.image %>" alt="Seed Image" width="200" /><br />
+        <img
+          src="<%= getOptimizedImageUrl(seed.image, { width: 400 }) %>"
+          alt="<%= seed.varietyName %>"
+          width="200"
+          loading="lazy"
+        /><br />
         <% } %>
         <p><%= seed.varietyDescription %></p>
         <p>Owner: <%= seed.owner.username %> (<%= seed.owner.location %>)</p>

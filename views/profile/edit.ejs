@@ -49,10 +49,11 @@
       <label>Profile Image:</label><br />
       <% if (user.profileImage) { %>
       <img
-        src="<%= user.profileImage %>"
+        src="<%= getOptimizedImageUrl(user.profileImage, { width: 200 }) %>"
         alt="Current Profile Image"
         width="100"
-      /><br />
+        loading="lazy"
+      />
       <% } %>
       <input type="file" name="profileImage" /><br />
 

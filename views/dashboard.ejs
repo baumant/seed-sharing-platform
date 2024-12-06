@@ -10,7 +10,12 @@
     <%- include('./partials/header') %>
     <h1>Welcome, <%= user.username %>!</h1>
     <% if (user.profileImage) { %>
-    <img src="<%= user.profileImage %>" alt="Profile Image" width="100" /><br />
+    <img
+      src="<%= getOptimizedImageUrl(user.profileImage, { width: 200 }) %>"
+      alt="Profile Image"
+      width="100"
+      loading="lazy"
+    />
     <% } %>
     <p><a href="/logout">Logout</a></p>
 

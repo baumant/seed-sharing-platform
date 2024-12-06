@@ -32,7 +32,17 @@ app.use(express.static(path.join(__dirname, "public")));
 app.set("view engine", "ejs");
 
 // 2. Security middleware
-app.use(helmet());
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        imgSrc: ["'self'", "data:", "https://res.cloudinary.com"],
+        styleSrc: ["'self'", "'unsafe-inline'"],
+      },
+    },
+  })
+);
 app.use(cookieParser());
 
 // 3. Session middleware
