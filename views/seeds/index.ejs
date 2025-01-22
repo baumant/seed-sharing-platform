@@ -25,33 +25,73 @@
     <% if (seeds.length === 0) { %>
     <p>No seed listings found.</p>
     <% } else { %>
-    <ul class="listing-list">
-      <% seeds.forEach(function(seed) { %>
-      <li class="listing">
-        <% if (seed.image) { %>
-        <img
-          src="<%= getOptimizedImageUrl(seed.image, { width: 400 }) %>"
-          alt="<%= seed.varietyName %>"
-          width="200"
-          loading="lazy"
-        />
-        <% } %>
-        <div class="listing-details">
-          <h3><%= seed.varietyName %> - <%= seed.plantType %></h3>
-          <p><%= seed.varietyDescription %></p>
-          <p>Owner: <%= seed.owner.username %> (<%= seed.owner.location %>)</p>
-          <p>
-            Contact:
-            <a href="mailto:<%= seed.owner.email %>"><%= seed.owner.email %></a>
-          </p>
+    <form>
+      <ul class="listing-list">
+        <% seeds.forEach(function(seed) { %>
+        <li class="listing">
+          <% if (seed.image) { %>
+          <img
+            src="<%= getOptimizedImageUrl(seed.image, { width: 400 }) %>"
+            alt="<%= seed.varietyName %>"
+            width="200"
+            loading="lazy"
+          />
+          <% } %>
+          <div class="listing-details">
+            <h3><%= seed.varietyName %> - <%= seed.plantType %></h3>
+            <p><%= seed.varietyDescription %></p>
+            <p>
+              Owner: <%= seed.owner.username %> (<%= seed.owner.location %>)
+            </p>
+            <p>
+              Contact:
+              <a href="mailto:<%= seed.owner.email %>"
+                ><%= seed.owner.email %></a
+              >
+            </p>
+            <label style="font-weight: bold">
+              <input
+                type="checkbox"
+                name="selectedSeeds"
+                value="<%= JSON.stringify({
+                  email: seed.owner.email,
+                  variety: seed.varietyName,
+                  type: seed.plantType,
+                  owner: seed.owner.username
+                }) %>"
+              />
+              Add to request
+            </label>
+          </div>
+        </li>
+        <% }); %>
+      </ul>
+      <div class="email-owners" id="emailOwnersSection" style="display: none">
+        <div>
+          <label for="userAddress">Your Address:</label>
+          <input
+            type="text"
+            id="userAddress"
+            name="userAddress"
+            placeholder="Enter your address"
+            required
+          />
         </div>
-      </li>
-      <% }); %>
-    </ul>
+        <div>
+          <h4>Selected Seeds:</h4>
+          <ul
+            id="selectedSeedsList"
+            style="max-height: 100px; overflow-y: auto"
+          ></ul>
+        </div>
+        <button id="emailOwnersBtn" type="button">Email Owners</button>
+      </div>
+    </form>
     <% } %> <% if (isAuthenticated) { %>
     <p><a href="/dashboard">Back to Dashboard</a></p>
     <% } else { %>
     <p><a href="/">Home</a></p>
     <% } %>
+    <script src="/js/emailOwners.js"></script>
   </body>
 </html>
