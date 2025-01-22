@@ -109,3 +109,9 @@ h1 {
   font-size: 13px;
   padding: 0 0 3px;
 }
+
+.search-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px 10px;
+}

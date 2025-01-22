@@ -1,5 +1,6 @@
 // controllers/seedController.js
 const Seed = require("../models/Seed");
+const User = require("../models/User");
 const multer = require("multer");
 const path = require("path");
 const { body, validationResult } = require("express-validator");
@@ -95,9 +96,13 @@ exports.allSeeds = async (req, res) => {
       "owner",
       "username location email"
     );
+    const users = await User.find({}, "username");
+    const plantTypes = await Seed.distinct("plantType");
     res.render("seeds/index", {
       seeds,
       query: "",
+      users,
+      plantTypes,
       getOptimizedImageUrl,
     });
   } catch (error) {
@@ -195,11 +200,41 @@ exports.deleteSeed = async (req, res) => {
 // Search seeds by name or type
 exports.searchSeeds = async (req, res) => {
   const query = req.query.q || "";
-  const seeds = await Seed.find({
-    $or: [
-      { plantType: new RegExp(query, "i") },
-      { varietyName: new RegExp(query, "i") },
+  const userFilter = req.query.userFilter || "";
+  const plantTypeFilter = req.query.plantTypeFilter || "";
+
+  const filter = {
+    $and: [
+      {
+        $or: [
+          { plantType: new RegExp(query, "i") },
+          { varietyName: new RegExp(query, "i") },
+        ],
+      },
     ],
-  }).populate("owner", "username location email");
-  res.render("seeds/index", { seeds, query, getOptimizedImageUrl });
+  };
+
+  if (userFilter) {
+    filter.$and.push({ owner: userFilter });
+  }
+
+  if (plantTypeFilter) {
+    filter.$and.push({ plantType: plantTypeFilter });
+  }
+
+  // Fetch all users and plant types for the filters
+  const seeds = await Seed.find(filter).populate(
+    "owner",
+    "username location email"
+  );
+  const users = await User.find({}, "username");
+  const plantTypes = await Seed.distinct("plantType");
+
+  res.render("seeds/index", {
+    seeds,
+    query,
+    users,
+    plantTypes,
+    getOptimizedImageUrl,
+  });
 };
