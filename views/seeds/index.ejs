@@ -19,7 +19,6 @@
         placeholder="Search seeds..."
         value="<%= query || '' %>"
       />
-      <button type="submit">Search</button>
 
       <!-- Filter by user -->
       <label for="userFilter"
@@ -42,6 +41,8 @@
           <% }); %>
         </select>
       </label>
+
+      <button type="submit">Search</button>
     </form>
 
     <% if (seeds.length === 0) { %>
